@@ -12,11 +12,12 @@ AWK 简明教程
 
 2）我只想让这篇博文像一个火辣的脱衣舞女挑起你的兴趣，然后还要你自己去下工夫去撸。
 
-废话少说，我们开始脱吧（注：这里只是topless）。
+
+
 打印/etc/passwd中奇数行的行号
 cat /etc/passwd | awk '{if (NR%2!=0) {print NR, $0} else {print $0}}'
 
-起步上台
+
 我从netstat命令中提取了如下信息作为用例：
 
 $ cat netstat.txt
@@ -85,7 +86,8 @@ tcp      0        1        coolshell.cn:80    208.115.113.92:50601   LAST_ACK
 tcp      0        0        coolshell.cn:80    123.169.124.111:49840  ESTABLISHED
 tcp      0        0        coolshell.cn:80    117.136.20.85:50025    FIN_WAIT2
 tcp      0        0        :::22              :::*                   LISTEN
-脱掉外套
+
+
 过滤记录
 我们再来看看如何过滤记录（下面过滤条件为：第三列的值为0 && 第6列的值为LISTEN）
 $ awk '$3==0 && $6=="LISTEN" ' netstat.txt
@@ -158,7 +160,8 @@ daemon  2       /sbin
 adm     3       /var/adm
 lp      4       /var/spool/lpd
 sync    5       /sbin
-脱掉衬衫
+
+
 字符串匹配
 我们再来看几个字符串匹配的示例：
 $ awk '$6 ~ /FIN/ || NR==1 {print NR,$4,$5,$6}' OFS="\t" netstat.txt
@@ -253,7 +256,7 @@ tcp        0      0 coolshell.cn:80        183.60.212.163:51082        TIME_WAIT
 awk 'NR!=1{print $4,$5 > $6}' netstat.txt
 再复杂一点：（注意其中的if-else-if语句，可见awk其实是个脚本解释器）
 $ awk 'NR!=1{if($6 ~ /TIME|ESTABLISHED/) print > "1.txt";
-else if($6 ~ /LISTEN/) print > "2.txt";
+else if($6 ~ /LISTEN/) print > "2.txt";   $6 ~ /LISTEN/  是判断第六列是否是listen字段
 else print > "3.txt" }' netstat.txt
  
 $ ls ?.txt
@@ -297,6 +300,15 @@ ESTABLISHED, 6
 FIN_WAIT2, 3
 LAST_ACK, 1
 LISTEN, 4
+
+#数组用法
+在使用数组的程序里，经常会使用一个循环让数组里的每一个元素都执行一次某一个操作。在其他程序里，数组的下标是连续的正整数，因此所有的下标很容易通过从低到高实现遍历。但这个方法在awk里不能使用，因为awk的下标可以是数字也可以是字符串。因此，awk使用一种特别的语句来遍历数组里的元素：
+
+for (VAR in ARRAY)
+BODY
+以上的循环将实现让数组ARRAY里的每一个元素都执行一次BODY。
+
+
 再来看看统计每个用户的进程的占了多少内存（注：sum的RSS那一列）
 $ ps aux | awk 'NR!=1{a[$1]+=$6;} END { for(i in a) print i ", " a[i]"KB";}'
 dbus, 540KB
@@ -304,7 +316,8 @@ mysql, 99928KB
 www, 3264924KB
 root, 63644KB
 hchen, 6020KB
-脱掉内衣
+
+
 awk脚本
 在上面我们可以看到一个END关键字。END的意思是“处理完所有的行的标识”，即然说到了END就有必要介绍一下BEGIN，这两个关键字意味着执行前和执行后的意思，语法如下：
 
@@ -417,7 +430,7 @@ Jack    2321    66      83      55
 Tom     2122    48      82      81
 Mike    2537    87      102     105
 Bob     2415    40      62      72
-几个花活
+
 最后，我们再来看几个小例子：
 #从file文件中找出长度大于80的行
 awk 'length>80' file
@@ -427,7 +440,57 @@ netstat -ntu | awk '{print $5}' | cut -d: -f1 | sort | uniq -c | sort -nr
  
 #打印99乘法表
 seq 9 | sed 'H;g' | awk -v RS='' '{for(i=1;i<=NF;i++)printf("%dx%d=%d%s", i, NR, i*NR, i==NR?"\n":"\t")}'
-自己撸吧
+#删除重复行
+在awk中,可以用!a[$0]++作为条件,对重复出现的行进行处理
+以数据
+1 2 3
+1 2 3
+1 2 4
+1 2 5
+为例，对于awk '!a[$3]++'
+awk处理第一行时： 先读取a[$3]值再自增，a[$3]即a[3]值为空(0)，即为awk '!0'，即为awk '1'，即为awk '1{print}'
+awk处理第二行时： 先读取a[$3]值再自增，a[$3]即a[3]值为1，即为awk '!1'，即为awk '0'，即为awk '0{print}'
+
+#awk排序
+asort使用说明
+srcarrlen=asort[srcarr,dscarr] 默认返回值是：原数组长度，传入参数dscarr则将排序后数组赋值给dscarr.
+
+ 
+
+[chengmo@localhost ~]$ awk 'BEGIN{
+a[100]=100;
+a[2]=224;
+a[3]=34;
+slen=asort(a,tA);
+for(i=1;i<=slen;i++)
+{print i,tA[i];}
+}'
+1 34
+2 100
+3 224
+
+asort只对值进行了排序，因此丢掉原先键值。
+
+ 
+
+2、asorti 使用说明
+
+[chengmo@localhost ~]$ awk 'BEGIN{
+a["d"]=100;
+a["a"]=224;
+a["c"]=34;
+slen=asorti(a,tA);
+for(i=1;i<=slen;i++)
+{print i,tA[i],a[tA[i]];}
+}'
+1 a 224
+2 c 34
+3 d 100
+
+asorti对键值 进行排序（字符串类型），将生成新的数组放入：tA中。
+
+ 
+
 关于其中的一些知识点可以参看gawk的手册：
 
 内建变量，参看：http://www.gnu.org/software/gawk/manual/gawk.html#Built_002din-Variables
