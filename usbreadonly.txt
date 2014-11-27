@@ -1,0 +1,23 @@
+					Ubuntu下U盘文件只读的解决办法  
+
+       解决方法：
+
+       1. 在Ubuntu终端运行如下命令
+       tail -f /var/log/syslog
+       2. 插入有只读文件系统故障的U盘
+
+       3. 观察命令行输出
+输出局部如下：
+   Jul  8 16:44:50 cslouis-pc kernel: [15595.155904] FAT: Filesystem error (dev sdb4)
+   Jul  8 16:44:50 cslouis-pc kernel: [15595.155905]     fat_get_cluster: invalid cluster chain (i_pos 0)
+ 
+       从上面可以看出U盘挂载的文件系统是/dev/sdb4，且文件系统有故障（FAT: Filesystem error）
+
+       4. 输入如下命令：
+       umount /media/ZCF(ZCF是你的U盘名，可以在media目录下用ls查看)
+
+       5. 修复U盘文件系统故障
+   sudo dosfsck -v -a /dev/sdb4
+
+   经过上面5步后，u盘就可恢复读写功能。
+
