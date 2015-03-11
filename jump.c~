@@ -4,10 +4,13 @@
 
 static jmp_buf buf;
 
+
+	int temp = 0;
 void second(void)
 {
 	printf("this is second\n");
 	longjmp(buf, 1);
+	printf("longjump is running\n");
 }
 
 void first(void)
@@ -17,10 +20,11 @@ void first(void)
 }
 int main(void)
 {
-	if(!setjmp(buf))
+	if(!setjmp(buf) && temp != 1)
 	{
 		printf("setjump is running\n");
 		first();
+		temp = 1;
 	}
 	else
 	{

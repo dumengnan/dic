@@ -19,6 +19,13 @@ void fun(char *s)
 		p++;
 	}
 	printf("the count is %d\n", count);
+	while(*s != '\0')
+	{
+		if(*s != '*')
+			
+		s++;
+	}
+printf("the count is %d\n",i);
 	while(count > 0)
 	{
 		a[i++] = '*';

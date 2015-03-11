@@ -1,0 +1,13 @@
+			U盘格式化以及修改Ｕ盘名字的方法
+１．格式化Ｕ盘
+	第一步：利用fdisk命令或者df -h 命令查看Ｕ盘的设备名　例:/dev/sdb4
+	第二步：先卸载Ｕ盘，umount /media/dci/usbname/
+	第三部：格式化Ｕ盘，mkfs -t vfat /dev/sdb4
+
+2.修改Ｕ盘卷标名称
+	第一步：修改配置文件
+		vim /etc/mtools.conf
+		在末尾添加mtools_skip_check = 1
+	第二步:利用指令进行修改
+		mlabel -i /dev/sdb4 ::usbnewname
+		eject /dev/sdb4 //卸载Ｕ盘

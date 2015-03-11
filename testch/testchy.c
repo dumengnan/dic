@@ -6,7 +6,7 @@ int main(void)
 {
 	FILE *fp;
 	unsigned char c1 = 0,  c2 = 0;
-	unsigned char s[2000][4] = {0};
+	unsigned char s[2000][4] = {{0},{0}};
 	unsigned int ncnt = 0, ntot = 0, i = 0, n[2000] = {0};
 
 	if((fp = fopen("1.txt", "r")) == NULL)
@@ -15,7 +15,7 @@ int main(void)
 		return 1;
 	}
 
-	while(c1 = fgetc(fp) != (unsigned char )EOF)
+	while((c1 = fgetc(fp)) != (unsigned char )EOF)
 	{
 		if(c1 >= 0xb0 && c1 <= 0xf7)
 		{
